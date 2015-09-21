@@ -74,9 +74,27 @@ class MyBot {
 					if($found) {
 						//we need the rest of the message
 						$response = "<@{$found['id']}> ".$e[1];
+						$sender = false;
+						foreach($this->context['users'] as $u) {
+							if($data['user'] == $u['id']) {
+								$sender = $u['name'];
+								break;
+							}
+						}
 					}
 				}
 				if($response != '') {
+
+					//log it
+					$logmsg = date('Y-m-d H:i:s', time())." ".$sender.": ".$user['name'].$data['text'];
+					$file = 'log.txt';
+					// Open the file to get existing content
+					$current = file_get_contents($file);
+					// Append a new person to the file
+					$current .= $logmsg."\n";
+					// Write the contents back to the file
+					file_put_contents($file, $current);
+
 					$client->send(
 						json_encode(
 							array(
@@ -93,7 +111,7 @@ class MyBot {
 							array(
 								'id' => time(),
 								'type' => 'message',
-								'channel' => 'G0B00ME9Y',//$data['channel'],
+								'channel' => 'G0B00ME9Y',//'G0B00ME9Y' (kudostest),//$data['channel'],
 								'text' => 'way to go '.$user['profile']['first_name'].'! :clap:',
 							)
 						)
